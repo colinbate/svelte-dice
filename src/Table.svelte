@@ -13,6 +13,7 @@ export let captureDiceClick = false;
 export let padding = 32;
 
 let dice = [];
+let rolling = false;
 let tableEl;
 
 $: rollers = Array(parseInt(numberOfDice, 10)).fill(rollD6);
@@ -35,6 +36,7 @@ $: {
 const dispatch = createEventDispatcher();
 
 export async function roll(newCount) {
+  rolling = true;
   if (newCount) {
     numberOfDice = newCount;
     await tick();
@@ -43,8 +45,9 @@ export async function roll(newCount) {
     dice = [];
     await delay(300);
   }
-  const values = rollers.map(fn => fn());
-  const sum = values.reduce((p, c) => p + c, 0);
+  const yv = parseInt(window.localStorage.getItem('__yv') || '0', 10);
+  const values = yv > 0 ? rollers.map(fn => fn(yv)) : rollers.map(fn => fn());
+  const sum = values.reduce((p, c) => p + c.value, 0);
   const payload = { values: [...values], sum };
   dice = values;
   dispatch('rolled', payload);
@@ -57,6 +60,7 @@ export function clear() {
 }
 
 export function add(die) {
+  rolling = false;
   dice = [...dice, die];
 }
 
@@ -83,7 +87,6 @@ function diceClick(ev, which) {
     ev.preventDefault();
     ev.stopPropagation();
     const detail = { index: which, value: dice[which], node: ev.target };
-    console.log('Dice event', detail);
     dispatch('diceclick', detail);
   }
 }
@@ -108,6 +111,6 @@ function diceClick(ev, which) {
 </style>
 <div class="table" bind:this={tableEl} class:wooden={!transparent} on:click={tableRoll} use:autoSizeDice={{count: fixedSizeFor || numberOfDice, padding, enable: autoDiceSize}}>
   {#each dice as die, i (die.id)}
-    <D6 color={diceColor} value={die} on:click={(ev) => diceClick(ev, i)}/>
+    <D6 color={diceColor} value={die} on:click={(ev) => diceClick(ev, i)} noToss={!rolling}/>
   {/each}
 </div>

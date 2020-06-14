@@ -3,7 +3,11 @@ import { randSide } from './rng';
 
 export function toss(node, { duration, disable }) {
   if (disable) {
-    return { duration: 0 };
+    return {
+      duration,
+      easing: quadOut,
+      css: t => `opacity: ${t}`
+    };
   }
   const direction = randSide(2) * 2 - 3; // -1 or 1
   const startingAngle = randSide(360);

@@ -155,7 +155,7 @@ $: side = 'n' + value.value;
   margin-top: 8.3333%;
 }
 </style>
-<div class="die {side}" data-die-id={value.id} on:click style="background-color: {color};" in:toss={{duration: 700, disable: noToss}}>
+<div class="die {side}" data-die-id={value.id} on:click style="background-color: var(--dice-color, {color});" in:toss={{duration: 700, disable: noToss}}>
   <div class="dot1 dot"></div>
   <div class="dot2 dot"></div>
   <div class="dot3 dot"></div>

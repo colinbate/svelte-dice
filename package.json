@@ -1,6 +1,6 @@
 {
   "name": "svelte-dice",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.2",
   "svelte": "src/index.js",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
