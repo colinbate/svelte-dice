@@ -1,18 +1,19 @@
 {
   "name": "svelte-dice",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "svelte": "src/index.js",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
+  "typings": "src/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^8.0.1",
-    "rollup": "^2.13.1",
-    "rollup-plugin-svelte": "^5.2.2",
-    "svelte": "^3.23.0"
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "rollup": "^2.0.0",
+    "rollup-plugin-svelte": "^6.0.0",
+    "svelte": "^3.0.0"
   },
   "keywords": [
     "svelte"

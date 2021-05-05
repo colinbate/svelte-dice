@@ -35,7 +35,7 @@ $: {
 
 const dispatch = createEventDispatcher();
 
-export async function roll(newCount) {
+export async function roll(newCount, fixedvalues = []) {
   rolling = true;
   if (newCount) {
     numberOfDice = newCount;
@@ -46,7 +46,11 @@ export async function roll(newCount) {
     await delay(300);
   }
   const yv = parseInt(window.localStorage.getItem('__yv') || '0', 10);
-  const values = yv > 0 ? rollers.map(fn => fn(yv)) : rollers.map(fn => fn());
+  const values = yv > 0
+    ? rollers.map(fn => fn(yv))
+    : (fixedvalues.length
+        ? rollers.map((fn, ii) => fn(fixedvalues[ii % fixedvalues.length]))
+        : rollers.map(fn => fn()));
   const sum = values.reduce((p, c) => p + c.value, 0);
   const payload = { values: [...values], sum };
   dice = values;
