@@ -1,10 +1,11 @@
-<script>
-import D6, {roll as rollD6} from './D6.svelte';
+<script lang="ts">
+import D6 from './D6.svelte';
 import { createEventDispatcher, tick } from 'svelte';
-import { delay, autoSizeDice } from './util';
+import { delay, autoSizeDice, DieResult, DieLocator, DiceSummary } from './util';
+import { ROLLERS } from './rolls';
 
 export let numberOfDice = 1;
-export let fixedSizeFor = undefined;
+export let fixedSizeFor: number | undefined = undefined;
 export let autoDiceSize = true;
 export let tapToRoll = true;
 export let diceColor = '#fff';
@@ -12,11 +13,13 @@ export let transparent = false;
 export let captureDiceClick = false;
 export let padding = 32;
 
-let dice = [];
+let dice: DieResult[] = [];
 let rolling = false;
-let tableEl;
+let tableEl: HTMLElement;
 
-$: rollers = Array(parseInt(numberOfDice, 10)).fill(rollD6);
+type rollType = typeof ROLLERS.d6;
+let rollers: rollType[];
+$: rollers = Array(numberOfDice).fill(ROLLERS.d6);
 $: {
   if (typeof numberOfDice === 'string') {
     numberOfDice = parseInt(numberOfDice, 10);
@@ -35,7 +38,7 @@ $: {
 
 const dispatch = createEventDispatcher();
 
-export async function roll(newCount, fixedvalues = []) {
+export async function roll(newCount: number | undefined = undefined, fixedvalues = []): Promise<DiceSummary> {
   rolling = true;
   if (newCount) {
     numberOfDice = newCount;
@@ -45,14 +48,11 @@ export async function roll(newCount, fixedvalues = []) {
     dice = [];
     await delay(300);
   }
-  const yv = parseInt(window.localStorage.getItem('__yv') || '0', 10);
-  const values = yv > 0
-    ? rollers.map(fn => fn(yv))
-    : (fixedvalues.length
-        ? rollers.map((fn, ii) => fn(fixedvalues[ii % fixedvalues.length]))
-        : rollers.map(fn => fn()));
+  const values = fixedvalues.length
+    ? rollers.map((fn, ii) => fn(fixedvalues[ii % fixedvalues.length]))
+    : rollers.map(fn => fn());
   const sum = values.reduce((p, c) => p + c.value, 0);
-  const payload = { values: [...values], sum };
+  const payload: DiceSummary = { results: [...values], sum };
   dice = values;
   dispatch('rolled', payload);
   return payload;
@@ -63,19 +63,19 @@ export function clear() {
   dispatch('cleared');
 }
 
-export function add(die) {
+export function add(die: DieResult) {
   rolling = false;
   dice = [...dice, die];
 }
 
-export function getById(id) {
+export function getById(id: string): DieLocator {
   const index = dice.findIndex(d => d.id === id);
   if (index < 0) {
     return;
   }
   return {
     index,
-    value: dice[index],
+    result: dice[index],
     node: tableEl.querySelector(`[data-die-id="${dice[index].id}"]`)
   }
 }
@@ -86,11 +86,11 @@ function tableRoll() {
   }
 }
 
-function diceClick(ev, which) {
+function diceClick(ev: MouseEvent, which: number) {
   if (captureDiceClick) {
     ev.preventDefault();
     ev.stopPropagation();
-    const detail = { index: which, value: dice[which], node: ev.target };
+    const detail: DieLocator = { index: which, result: dice[which], node: ev.target as HTMLElement };
     dispatch('diceclick', detail);
   }
 }

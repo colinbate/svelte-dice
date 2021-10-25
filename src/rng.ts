@@ -9,7 +9,7 @@ function rand() {
   return (a[0] & MAX_INT) / MAX_INT;
 }
 
-export function randSide(sides) {
+export function randSide(sides: number) {
   return Math.floor(rand() * sides) + 1;
 }
 

@@ -1,12 +1,17 @@
-import { quadOut} from 'svelte/easing';
+import { quadOut } from 'svelte/easing';
 import { randSide } from './rng';
 
-export function toss(node, { duration, disable }) {
+export interface TossOptions {
+  duration: number;
+  disable: boolean;
+}
+
+export function toss(node: HTMLElement, { duration, disable }: TossOptions) {
   if (disable) {
     return {
       duration,
       easing: quadOut,
-      css: t => `opacity: ${t}`
+      css: (t: number) => `opacity: ${t}`
     };
   }
   const direction = randSide(2) * 2 - 3; // -1 or 1
@@ -16,6 +21,6 @@ export function toss(node, { duration, disable }) {
   return {
     duration,
     easing: quadOut,
-    css: (t, u) => `transform: translate3d(0, ${200 * u}%, 0) rotate(${(t * direction * twist) + startingAngle}deg)`
+    css: (t: number, u: number) => `transform: translate3d(0, ${200 * u}%, 0) rotate(${(t * direction * twist) + startingAngle}deg)`
   }
 }

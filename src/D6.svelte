@@ -1,13 +1,7 @@
-<script context="module">
-import { randSide, shortId } from './rng';
-export const SIDES = 6;
-export function roll(fixed) {
-  return { value: fixed || randSide(SIDES), id: shortId() };
-}
-</script>
-<script>
+<script lang="ts">
 import { toss } from './toss';
-export let value;
+import type { DieResult } from './util';
+export let value: DieResult;
 export let color = '#fff';
 export let noToss = false;
 $: side = 'n' + value.value;
